@@ -1,22 +1,17 @@
 import React from "react";
 import "./RingDiagram.css"
 
-interface IElements {
+interface IElement {
     name: string,
     percent: number,
-    color: string
-}
-
-interface DefaultElement {
-    name: string,
     color: string
 }
 
 interface PropsRingDiagram {
     text?: string,
     underText?: string,
-    elements: IElements[],
-    default: DefaultElement
+    elements: IElement[],
+    default: IElement
 }
 
 const SHIFT_BY_RING = 25;
@@ -44,7 +39,7 @@ const RingDiagram = (props: PropsRingDiagram) => {
                         strokeWidth="3" 
                         role="presentation"
                     >
-                        <title>{props.default.name}</title>
+                        <title>{props.default.name} ({props.default.percent}%)</title>
                     </circle>
                     
                     {
@@ -58,7 +53,7 @@ const RingDiagram = (props: PropsRingDiagram) => {
                                 strokeDasharray={`${element.percent} ${100 - element.percent}`} 
                                 strokeDashoffset={arrDashoffset[i]}
                             >
-                                <title>{element.name}</title>
+                                <title>{element.name} ({element.percent}%)</title>
                             </circle>
                         ))
                     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { KeyboardEvent } from 'react';
 import { useState } from 'react';
 import './App.css';
 import { audio } from './audio';
@@ -10,7 +10,6 @@ function App() {
     const [countError, setCountError] = useState(0);
 
     const [isFirstTry, setIsFirstTry] = useState(true);
-    const [hasError, setHasError] = useState(false);
 
     const [text, setText] = useState("");
     const [currentWord, setCurrentWord] = useState("");
@@ -18,15 +17,21 @@ function App() {
     const countRight: number = countTry - countError - countWarn;
     const percentError: number = Math.round(100 * countError / countTry);
     const percentWarn: number = Math.floor(100 * countWarn / countTry);
+    const percentRight: number = 100 - percentError - percentWarn;
 
-    const next = (isDecided=true) => {
+    const start = () => {
+        const newWord = audio.getRandomWord();
+        setCurrentWord(newWord);
+        audio.play(newWord);
+    }
+
+    const next = (isDecided = true) => {
         const newWord = audio.getRandomWord();
         setCurrentWord(newWord);
         audio.play(newWord);
 
         setCountTry(countTry => countTry + 1);
         setIsFirstTry(true);
-        setHasError(false);
 
         if (!isDecided) {
             setCountError(countError => countError + 1);
@@ -35,20 +40,22 @@ function App() {
 
     const check = () => {
         if (currentWord.toLocaleLowerCase() === text.toLocaleLowerCase()) {
-            audio.playWin(next);
-            
-            if (!isFirstTry) {
-                setCountError(countError => countError - 1);
-                setCountWarn(countWarn => countWarn + 1);
-            }
+            audio.playWin(() => {
+                next();
+
+                if (!isFirstTry) {
+                    setCountWarn(countWarn => countWarn + 1);
+                }
+            });
         } else {
             setIsFirstTry(false);
             audio.playError();
+        }
+    }
 
-            if (!hasError) {
-                setHasError(true);
-                setCountError(countError => countError + 1);
-            }
+    const onKeyPress = (e: KeyboardEvent<Element>) => {
+        if (e.key === "Enter") {
+            check();
         }
     }
 
@@ -56,25 +63,29 @@ function App() {
         <div className="App">
             <div className="App_element">
                 {
-                    currentWord &&
-                    <>
-                        <input
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                        />
-                        <button
-                            onClick={check}
-                        >Проверить</button>
-                    </>
+                    currentWord
+                        ? <>
+                            <input
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
+                                onKeyPress={onKeyPress}
+                            />
+                            <button
+                                onClick={check}
+                            >Проверить</button>
+                            <button
+                                onClick={() => audio.play(currentWord)}
+                            >Произнести слово заново</button>
+
+                            <button
+                                onClick={() => next(false)}
+                            >Пропустить слово</button>
+                        </>
+                        : <button
+                            onClick={start}
+                        >Играть</button>
+
                 }
-                {
-                    currentWord && <button
-                        onClick={() => audio.play(currentWord)}
-                    >Переиграть</button>
-                }
-                <button
-                    onClick={() => next(!currentWord)}
-                >{currentWord ? "Следующее слово" : "Играть"}</button>
             </div>
 
             {
@@ -83,18 +94,24 @@ function App() {
                     <RingDiagram
                         elements={[
                             {
-                                name: "Нерешено",
+                                name: `Пропущено ${countError}/${countTry}`,
                                 percent: percentError,
                                 color: "red"
                             },
                             {
-                                name: "Решено не с первого раза",
+                                name: `Решено не с первого раза ${countWarn}/${countTry}`,
                                 percent: percentWarn,
                                 color: "yellow"
                             }
                         ]}
-                        default={{ name: "Правильно", color: "green" }}
-                        text={`${100 - percentError - percentWarn}%`}
+                        default={
+                            {
+                                name: `Правильно решено ${countRight}/${countTry}`,
+                                color: "green",
+                                percent: percentRight
+                            }
+                        }
+                        text={`${percentRight}%`}
                         underText={`${countRight}/${countTry} правильно`}
                     />
                 </div>

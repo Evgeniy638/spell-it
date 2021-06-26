@@ -1,30 +1,10 @@
 import { listWords } from './listWords';
 
-interface IGetRandomWord {
-    (): string
-}
-
-interface IPlay {
-    (message: string, callback?:Function): void
-}
-
-interface IStop {
-    (): void
-}
-
-interface IAudio {
-    readonly getRandomWord: IGetRandomWord,
-    readonly play: IPlay,
-    readonly stop: IStop,
-    readonly playWin: Function,
-    readonly playError: Function
-}
-
-export const audio: IAudio = {
+export const audio = {
     getRandomWord() {
         return listWords[Math.floor(Math.random() * listWords.length)];
     },
-    play(message: string, callback:any) {
+    play(message: string, callback?:any) {
         this.stop();
         const speechSynthesis: SpeechSynthesisUtterance = new SpeechSynthesisUtterance(message);
         speechSynthesis.addEventListener("end", callback);
