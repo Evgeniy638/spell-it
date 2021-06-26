@@ -10,6 +10,7 @@ function App() {
     const [countError, setCountError] = useState(0);
 
     const [isFirstTry, setIsFirstTry] = useState(true);
+    const [hasError, setHasError] = useState(false);
 
     const [text, setText] = useState("");
     const [currentWord, setCurrentWord] = useState("");
@@ -17,6 +18,20 @@ function App() {
     const countRight: number = countTry - countError - countWarn;
     const percentError: number = Math.round(100 * countError / countTry);
     const percentWarn: number = Math.floor(100 * countWarn / countTry);
+
+    const next = (isDecided=true) => {
+        const newWord = audio.getRandomWord();
+        setCurrentWord(newWord);
+        audio.play(newWord);
+
+        setCountTry(countTry => countTry + 1);
+        setIsFirstTry(true);
+        setHasError(false);
+
+        if (!isDecided) {
+            setCountError(countError => countError + 1);
+        }
+    };
 
     const check = () => {
         if (currentWord.toLocaleLowerCase() === text.toLocaleLowerCase()) {
@@ -29,22 +44,13 @@ function App() {
         } else {
             setIsFirstTry(false);
             audio.playError();
-            setCountError(countError => countError + 1);
+
+            if (!hasError) {
+                setHasError(true);
+                setCountError(countError => countError + 1);
+            }
         }
     }
-
-    const next = (isDecided=true) => {
-        const newWord = audio.getRandomWord();
-        setCurrentWord(newWord);
-        audio.play(newWord);
-
-        setCountTry(countTry => countTry + 1);
-        setIsFirstTry(true);
-
-        if (!isDecided) {
-            setCountError(countError => countError + 1);
-        }
-    };
 
     return (
         <div className="App">
