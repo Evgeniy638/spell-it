@@ -5,7 +5,7 @@ interface IGetRandomWord {
 }
 
 interface IPlay {
-    (message: string): void
+    (message: string, callback?:Function): void
 }
 
 interface IStop {
@@ -24,18 +24,19 @@ export const audio: IAudio = {
     getRandomWord() {
         return listWords[Math.floor(Math.random() * listWords.length)];
     },
-    play(message: string) {
+    play(message: string, callback:any) {
         this.stop();
         const speechSynthesis: SpeechSynthesisUtterance = new SpeechSynthesisUtterance(message);
+        speechSynthesis.addEventListener("end", callback);
         window.speechSynthesis.speak(speechSynthesis);
     },
     stop() {
         window.speechSynthesis.cancel();
     },
-    playWin(): void {
-        this.play("Правильно");
+    playWin(callback=()=>{}): void {
+        this.play("Правильно", callback);
     },
-    playError(): void {
-        this.play("Ошибка");
+    playError(callback=()=>{}): void {
+        this.play("Ошибка", callback);
     }
 }

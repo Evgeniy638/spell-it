@@ -1,0 +1,61 @@
+.RingDiagram__chart-text {
+    fill: #000;
+    transform: translateY(0.25em);
+}
+
+.RingDiagram__chart-text-main {
+    font-size: 0.6em;
+    line-height: 1;
+    text-anchor: middle;
+    transform: translateY(-0.25em);
+}
+
+.RingDiagram__chart-text-under {
+    font-size: 0.15em;
+    fill: rgb(158, 158, 158);
+    text-anchor: middle;
+    transform: translateY(0.7em);
+}
+
+.RingDiagram {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .RingDiagram {
+        flex-direction: row;
+    }
+}
+
+.RingDiagram__key {
+    flex: 1;
+    padding-left: 15px;
+    padding-right: 15px;
+    align-self: center;
+}
+
+.RingDiagram__svg {
+    height: auto;
+}
+
+.RingDiagram__figure-key-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.RingDiagram__figure-key-list-item {
+    margin: 0 0 8px;
+    padding: 0;
+}
+
+.RingDiagram__shape-circle {
+    display: inline-block;
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 6px;
+    background-color: red;
+}
